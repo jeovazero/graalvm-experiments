@@ -1,4 +1,4 @@
-val scala3Version = "3.4.2"
+val scala3Version = "3.3.3"
 // enablePlugins(GraalVMNativeImagePlugin)
 
 lazy val nativeBuildSettings = Seq(
@@ -14,6 +14,8 @@ lazy val nativeBuildSettings = Seq(
 
 val deps = Seq(
   "dev.zio" %% "zio" % "2.1.6",
+  "dev.zio" %% "zio-json" % "0.6.2",
+  "dev.zio" %% "zio-logging" % "2.3.0",
   "com.softwaremill.sttp.client3" %% "zio" % "3.9.7",
   "com.softwaremill.sttp.client3" %% "core" % "3.9.7"
 )
