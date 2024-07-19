@@ -55,4 +55,4 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         token: ${{ secrets.GITHUB_TOKEN }}        
-        files: .target/native-image/cli-graal
+        files: ./target/native-image/cli-graal
