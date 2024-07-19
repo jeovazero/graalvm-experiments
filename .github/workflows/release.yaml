@@ -28,6 +28,8 @@ jobs:
         prerelease: true
 
   build_and_upload_linux:
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: ./scala3
