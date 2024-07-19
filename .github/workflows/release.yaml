@@ -41,9 +41,10 @@ jobs:
     - uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
-    - run: nix flake check
     - run: |
         cd scala3
+        nix flake check
+    - run: |
         nix develop
     - run: |
         pwd
