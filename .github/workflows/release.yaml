@@ -14,7 +14,7 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - id: create_release
       name: Create Release
       uses: softprops/action-gh-release@v2
@@ -46,7 +46,7 @@ jobs:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
     - run: nix flake check
     - run: |
-        nix develop --command "sbt nativeImage"
+        nix develop --command sbt nativeImage
     - run: upx ./target/native-image/cli-graal
     - name: Upload Release Asset
       id: upload_release_asset 
