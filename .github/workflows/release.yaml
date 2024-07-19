@@ -1,0 +1,61 @@
+name: Release 
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create_release:
+    name: Create Release Job
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+    - uses: actions/checkout@v2
+    - id: create_release
+      name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Release Notes
+        draft: true
+        prerelease: true
+
+  build_and_upload_linux:
+    name: Build on GNU/Linux
+    needs: create_release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Restore and cache Nix store
+      uses: nix-community/cache-nix-action@v5
+      with:
+      # restore and save a cache using this key
+        primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
+    - uses: cachix/install-nix-action@v27
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    - run: nix flake check
+    - run: |
+        cd scala3
+        nix develop
+    - run: |
+        pwd
+        sbt nativeImage
+    - run: upx ./target/native-image/cli-graal
+    - name: Upload Release Asset
+      id: upload_release_asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ./scala3/target/native-image/cli-graal
+        asset_name: cli-graal-${{ runner.os }}
+        asset_content_type: application/gzip
+

@@ -3,7 +3,7 @@
   let graal =graalvmCEPackages.graalvm-ce-musl;
   in
   pkgs.mkShell {
-    nativeBuildInputs = [ scala_3 sbt graal musl.dev];
+    nativeBuildInputs = [ scala_3 sbt graal musl.dev upx ];
 
     shellHook = ''
       export GRAAL_HOME=${graal}
