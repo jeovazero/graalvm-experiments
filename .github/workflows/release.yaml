@@ -45,8 +45,10 @@ jobs:
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
     - run: nix flake check
-    - run: nix develop
-    - run: sbt nativeImage
+    - run: |
+        nix develop
+        echo $GRAAL_HOME
+        sbt nativeImage
     - run: upx ./target/native-image/cli-graal
     - name: Upload Release Asset
       id: upload_release_asset 
