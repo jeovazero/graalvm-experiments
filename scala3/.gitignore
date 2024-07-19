@@ -1,3 +1,5 @@
+.temp_env
+
 # scala-cli, bloop, metals
 .bsp/
 .bloop/

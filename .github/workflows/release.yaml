@@ -47,6 +47,7 @@ jobs:
     - run: nix flake check
     - run: |
         nix develop
+        echo $(cat .temp_env) >> $GITHUB_ENV
         echo $GRAAL_HOME
         sbt nativeImage
     - run: upx ./target/native-image/cli-graal
