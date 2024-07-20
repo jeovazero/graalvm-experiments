@@ -6,36 +6,17 @@ on:
       - 'v*'
 
 jobs:
-  create_release:
-    permissions:
-      contents: write
-    name: Create Release Job
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-    - uses: actions/checkout@v4
-    - id: create_release
-      name: Create Release
-      uses: softprops/action-gh-release@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: ${{ github.ref }}
-        name: Release ${{ github.ref }}
-        body: |
-          Release Notes
-        draft: true
-        prerelease: true
-
-  build_and_upload_linux:
+  release:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: write
     defaults:
       run:
         working-directory: ./scala3
-    name: Build on GNU/Linux
-    needs: create_release
-    runs-on: ubuntu-latest
+    name: Release on ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
     - name: Restore and cache Nix store
@@ -46,13 +27,20 @@ jobs:
     - uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
-    - run: nix flake check
     - run: |
-        nix develop --command sbt nativeImage
-    - run: upx ./target/native-image/cli-graal
+        nix develop --command sbt nativeImage; 
+        nix develop --command upx ./target/native-image/cli-graal
+        mv ./target/native-image/cli-graal ./target/native-image/cli-graal-${{ matrix.os }}
+      name: Build native Image
     - name: Upload Release Asset
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ github.ref }}
-        token: ${{ secrets.GITHUB_TOKEN }}        
-        files: ./scala3/target/native-image/cli-graal
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: ./scala3/target/native-image/cli-graal-${{ matrix.os }}
+        body: |
+          Release Notes
+        draft: true
+        prerelease: true
+

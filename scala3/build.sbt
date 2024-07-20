@@ -2,14 +2,15 @@
 val scala3Version = "3.5.0-RC4"
 // enablePlugins(GraalVMNativeImagePlugin)
 
+val isLinux = System.getProperty("os.name").toLowerCase.contains("linux")
+val addLibcMusl = if (isLinux) Seq("--static", "--libc=musl") else Seq("-H:-CheckToolchain")
+
 lazy val nativeBuildSettings = Seq(
   nativeImageOptions ++= Seq(
     "--no-fallback",
-    "--static",
-    "--libc=musl",
     "--verbose",
     "-H:+ReportExceptionStackTraces"
-  ),
+  ) ++ addLibcMusl,
   nativeImageInstalled := true
 )
 
