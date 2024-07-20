@@ -7,6 +7,5 @@
 
     shellHook = ''
       export GRAAL_HOME=${graal}
-      echo 'GRAAL_HOME=${graal}' > .temp_env
     '';
 }
